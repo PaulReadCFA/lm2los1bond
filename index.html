@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bond Valuation Calculator | CFA Institute</title>
+  <meta name="description" content="Interactive bond valuation calculator demonstrating present value calculations for coupon bonds">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Chart.js for visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Skip Links for Accessibility -->
+    <a href="#calculator" class="skip-link">Skip to calculator</a>
+    <a href="#data-table" class="skip-link">Skip to data table</a>
+
+    <main class="content">
+      <!-- Card 1: Equation -->
+      <section class="card" id="equation-card">
+        <h4 class="card-title">Bond Valuation Equation</h4>
+        <div class="card-content">
+          <p class="equation-intro">Equation 6 shows the price of a coupon bond expressed as:</p>
+          
+<div class="equation-container" aria-describedby="equation-description">
+  <p class="sr-only" id="equation-description">
+    Bond valuation equation: Present value of a coupon bond equals the coupon payment divided by the rate,
+    multiplied by one minus one divided by the quantity one plus the rate raised to the power T,
+    plus the face value divided by the quantity one plus the rate raised to the power T.
+  </p>
+
+  <div class="equation" aria-hidden="true">
+    <span class="equation-term">
+      <span class="bold" style="color:#ea792d;">
+  PV<sub class="equation-subscript">coupon&nbsp;bond</sub>
+</span>
+
+    </span>
+
+    <span class="equation-operator">=</span>
+
+    <span class="fraction">
+      <span class="fraction-numerator bold" style="color:#3369FF;">PMT</span>
+      <span class="fraction-line"></span>
+      <span class="fraction-denominator" style="color:#7a46ff;">r</span>
+    </span>
+
+    <span class="equation-operator">×</span>
+
+    <span class="bracket" data-symbol="["></span>
+
+    <span class="equation-group">
+      1 −
+      <span class="fraction">
+        <span class="fraction-numerator">1</span>
+        <span class="fraction-line"></span>
+        <span class="fraction-denominator">(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup></span>
+      </span>
+    </span>
+    <span class="bracket" data-symbol="]"></span>
+
+
+    <span class="equation-operator">+</span>
+
+    <span class="fraction">
+      <span class="fraction-numerator bold" style="color:#49b2b8;">FV</span>
+      <span class="fraction-line"></span>
+      <span class="fraction-denominator">(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup></span>
+    </span>
+  </div>
+</div>
+
+
+
+        </div>
+      </section>
+
+      <!-- Cards 2 & 3: Results and Visualizer (side by side on desktop) -->
+      <div class="grid-container">
+        <!-- Card 2: Results & Analysis -->
+        <div class="grid-item-left">
+          <section class="card" id="results-card">
+            <h4 class="card-title">Results and Analysis</h4>
+            <div class="card-content">
+              <div id="results-content">
+                <!-- Populated by JavaScript -->
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Card 3: Visualizer -->
+        <div class="grid-item-right">
+          <section class="card" id="data-table">
+            <h4 class="card-title">Bond Cash Flows</h4>
+            <div class="card-content">
+              <!-- View toggle buttons -->
+              <div class="view-controls">
+                <div class="legend" id="chart-legend">
+                  <span class="legend-item">
+                    <span class="legend-color" style="background-color: #f2af81; border: 1px solid #333;"></span>
+                    Initial purchase (solid)
+                  </span>
+                  <span class="legend-item">
+                    <span class="legend-color" style="background-color: #3369FF; border: 1px solid #333;"></span>
+                    Coupon payment (solid)
+                  </span>
+                  <span class="legend-item">
+                    <span class="legend-color" style="background-color: #49b2b8; border: 1px solid #333;"></span>
+                    Principal repayment (solid)
+                  </span>
+                </div>
+                
+                <div class="button-group" role="group" aria-label="View mode">
+                  <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">
+                    Switch to Chart
+                  </button>
+                  <button id="table-view-btn" class="toggle-btn" aria-pressed="false">
+                    Switch to Table
+                  </button>
+                </div>
+              </div>
+
+              <!-- Screen reader announcement for view changes -->
+              <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
+
+              <!-- Hidden chart description -->
+              <div class="sr-only" id="bond-chart-desc">
+                <h5 id="bond-chart-title">Bond cash flows</h5>
+                <p>Stacked bars display coupon payments and the final principal repayment over time. 
+                   The initial purchase appears as a negative bar at period 0. 
+                   Different borders help distinguish between payment types.</p>
+              </div>
+
+              <!-- Chart container -->
+              <div id="chart-container" class="chart-wrapper" 
+                   role="img" 
+                   aria-labelledby="bond-chart-title" 
+                   aria-describedby="bond-chart-desc"
+                   tabindex="0">
+                <canvas id="bond-chart"></canvas>
+              </div>
+
+              <!-- Table container -->
+              <div id="table-container" class="table-wrapper" style="display: none;">
+                <table id="cash-flow-table" class="data-table" tabindex="0">
+                  <!-- Populated by JavaScript -->
+                </table>
+                <p id="table-note" class="table-note">
+                  Note: Values in parentheses indicate negative cash flows (outflows).
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Card 4: Calculator -->
+      <section class="card" id="calculator">
+        <h4 class="card-title">Bond Cash Flow Calculator</h4>
+        <div class="card-content">
+          <!-- Static info row -->
+          <div class="info-box">
+            <div class="info-item">
+              <span class="info-label">Face value:</span>
+              <span class="info-value">$100.00</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Payment frequency:</span>
+              <span class="info-value">Semi-annual</span>
+            </div>
+          </div>
+
+          <!-- Required fields indicator -->
+          <p class="required-text">* Required fields</p>
+
+          <!-- Input controls -->
+          <div class="input-section">
+            <p class="sr-only" id="inputHelp">
+              Enter values and the calculator updates results and the chart automatically.
+            </p>
+
+            <div class="input-group">
+              <!-- Coupon Rate -->
+              <div class="input-wrapper">
+                <label for="coupon-rate" class="input-label">
+                  Coupon rate <span class="range-hint">(0 - 10)</span> 
+                  <span class="required-star">*</span>
+                </label>
+                <div class="input-with-suffix">
+                  <input 
+                    type="number" 
+                    id="coupon-rate" 
+                    class="input-field"
+                    min="0" 
+                    max="10" 
+                    step="0.1" 
+                    value="8.6"
+                    aria-required="true"
+                    aria-invalid="false"
+                    aria-describedby="inputHelp"
+                  />
+                  <span class="input-suffix">%</span>
+                </div>
+                <p id="coupon-rate-error" class="error-message" role="alert"></p>
+              </div>
+
+              <!-- Yield to Maturity -->
+              <div class="input-wrapper">
+                <label for="ytm" class="input-label">
+                  Yield-to-maturity <span class="range-hint">(0 - 10)</span>
+                  <span class="required-star">*</span>
+                </label>
+                <div class="input-with-suffix">
+                  <input 
+                    type="number" 
+                    id="ytm" 
+                    class="input-field"
+                    min="0" 
+                    max="10" 
+                    step="0.1" 
+                    value="6.5"
+                    aria-required="true"
+                    aria-invalid="false"
+                    aria-describedby="inputHelp"
+                  />
+                  <span class="input-suffix">%</span>
+                </div>
+                <p id="ytm-error" class="error-message" role="alert"></p>
+              </div>
+
+              <!-- Years to Maturity -->
+              <div class="input-wrapper">
+                <label for="years" class="input-label">
+                  Years-to-maturity <span class="range-hint">(1 - 5)</span>
+                  <span class="required-star">*</span>
+                </label>
+                <div class="input-with-suffix">
+                  <input 
+                    type="number" 
+                    id="years" 
+                    class="input-field"
+                    min="1" 
+                    max="5" 
+                    step="0.5" 
+                    value="5"
+                    aria-required="true"
+                    aria-invalid="false"
+                    aria-describedby="inputHelp"
+                  />
+                </div>
+                <p id="years-error" class="error-message" role="alert"></p>
+              </div>
+            </div>
+
+            <!-- Validation summary -->
+            <div id="validation-summary" class="validation-summary" role="alert" style="display: none;">
+              <div class="validation-title">Please correct the following:</div>
+              <ul id="validation-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="calculator.js"></script>
+</body>
+</html>
