@@ -15,6 +15,7 @@ const COLORS = {
 
 let chartInstance = null;
 let currentFocusIndex = 0;
+let isKeyboardMode = false;
 
 /**
  * Create or update bond cash flow chart
@@ -87,6 +88,13 @@ export function renderChart(cashFlows, showLabels = true) {
       interaction: {
         mode: 'index',
         intersect: false
+      },
+      onHover: (event, activeElements) => {
+        // Ignore mouse hover if in keyboard mode
+        if (isKeyboardMode && document.activeElement === canvas) {
+          event.native.stopImmediatePropagation();
+          return false;
+        }
       },
       plugins: {
         title: {
@@ -270,6 +278,9 @@ function setupKeyboardNavigation(canvas, cashFlows, totalData) {
     const maxIndex = cashFlows.length - 1;
     let newIndex = currentFocusIndex;
     
+    // Enable keyboard mode on any arrow key press
+    isKeyboardMode = true;
+    
     switch(e.key) {
       case 'ArrowRight':
       case 'ArrowDown':
@@ -297,6 +308,9 @@ function setupKeyboardNavigation(canvas, cashFlows, totalData) {
       currentFocusIndex = newIndex;
       chartInstance.update('none'); // Update without animation
       announceDataPoint(cashFlows[currentFocusIndex], totalData[currentFocusIndex]);
+      
+      // Show tooltip at focused bar
+      showTooltipAtIndex(currentFocusIndex);
     }
   };
   
@@ -310,6 +324,7 @@ function setupKeyboardNavigation(canvas, cashFlows, totalData) {
   };
   
   const blurListener = () => {
+    chartInstance.tooltip.setActiveElements([], {x: 0, y: 0});
     chartInstance.update('none');
   };
   
@@ -317,6 +332,38 @@ function setupKeyboardNavigation(canvas, cashFlows, totalData) {
   canvas._blurListener = blurListener;
   canvas.addEventListener('focus', focusListener);
   canvas.addEventListener('blur', blurListener);
+  
+  // Disable keyboard mode when mouse moves over chart
+  const mouseMoveListener = () => {
+    isKeyboardMode = false;
+  };
+  
+  canvas._mouseMoveListener = mouseMoveListener;
+  canvas.addEventListener('mousemove', mouseMoveListener);
+}
+
+/**
+ * Show tooltip at a specific data index
+ * @param {number} index - Data point index
+ */
+function showTooltipAtIndex(index) {
+  if (!chartInstance) return;
+  
+  const meta0 = chartInstance.getDatasetMeta(0);
+  const meta1 = chartInstance.getDatasetMeta(1);
+  
+  if (!meta0.data[index] || !meta1.data[index]) return;
+  
+  // Set active elements for both datasets at this index
+  chartInstance.tooltip.setActiveElements([
+    {datasetIndex: 0, index: index},
+    {datasetIndex: 1, index: index}
+  ], {
+    x: meta1.data[index].x,
+    y: meta1.data[index].y
+  });
+  
+  chartInstance.update('none');
 }
 
 /**
