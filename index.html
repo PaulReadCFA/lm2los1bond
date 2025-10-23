@@ -20,63 +20,64 @@
 
     <main class="content">
       <!-- Card 1: Equation -->
-      <section class="card" id="equation-card">
-        <h4 class="card-title">Bond Valuation Equation</h4>
-        <div class="card-content">
-          <p class="equation-intro">Equation 6 shows the price of a coupon bond expressed as:</p>
-          
-<div class="equation-container" aria-describedby="equation-description">
-  <p class="sr-only" id="equation-description">
-    Bond valuation equation: Present value of a coupon bond equals the coupon payment divided by the rate,
-    multiplied by one minus one divided by the quantity one plus the rate raised to the power T,
-    plus the face value divided by the quantity one plus the rate raised to the power T.
+<section id="equation-card" class="card">
+  <h4 class="card-title">Bond Valuation Equation</h4>
+  <p class="equation-intro">
+    Equation 6 shows the price of a coupon bond expressed as:
   </p>
 
-  <div class="equation" aria-hidden="true">
-    <span class="equation-term">
-      <span class="bold" style="color:#ea792d;">
-  PV<sub class="equation-subscript">coupon&nbsp;bond</sub>
-</span>
+  <div class="equation-container" aria-describedby="equation-description">
+    <!-- MathML version -->
+    <div id="mathml-equation">
+      <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+        <mrow>
+          <msub>
+            <mi mathcolor="#ea792d">PV</mi>
+            <mtext mathcolor="#ea792d">coupon bond</mtext>
+          </msub>
+          <mo>=</mo>
+          <mfrac>
+            <mi mathcolor="#3369FF">PMT</mi>
+            <mi mathcolor="#7a46ff">r</mi>
+          </mfrac>
+          <mo>×</mo>
+          <mrow>
+            <mo>[</mo>
+            <mn>1</mn>
+            <mo>−</mo>
+            <mfrac>
+              <mn>1</mn>
+              <msup>
+                <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi mathcolor="#7a46ff">r</mi><mo>)</mo></mrow>
+                <mi>T</mi>
+              </msup>
+            </mfrac>
+            <mo>]</mo>
+          </mrow>
+          <mo>+</mo>
+          <mfrac>
+            <mi mathcolor="#32959a">FV</mi>
+            <msup>
+              <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi mathcolor="#7a46ff">r</mi><mo>)</mo></mrow>
+              <mi>T</mi>
+            </msup>
+          </mfrac>
+        </mrow>
+      </math>
+    </div>
 
-    </span>
-
-    <span class="equation-operator">=</span>
-
-    <span class="fraction">
-      <span class="fraction-numerator bold" style="color:#3369FF;">PMT</span>
-      <span class="fraction-line"></span>
-      <span class="fraction-denominator" style="color:#7a46ff;">r</span>
-    </span>
-
-    <span class="equation-operator">×</span>
-
-    <span class="bracket" data-symbol="["></span>
-
-    <span class="equation-group">
-      1 −
-      <span class="fraction">
-        <span class="fraction-numerator">1</span>
-        <span class="fraction-line"></span>
-        <span class="fraction-denominator">(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup></span>
-      </span>
-    </span>
-    <span class="bracket" data-symbol="]"></span>
-
-
-    <span class="equation-operator">+</span>
-
-    <span class="fraction">
-      <span class="fraction-numerator bold" style="color:#49b2b8;">FV</span>
-      <span class="fraction-line"></span>
-      <span class="fraction-denominator">(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup></span>
-    </span>
+    <!-- HTML fallback -->
+    <div id="html-equation" hidden>
+      <span class="bold" style="color:#ea792d;">PV<sub>coupon bond</sub></span> =
+      <span style="color:#3369FF;">PMT</span>/<span style="color:#7a46ff;">r</span>
+      × [1 − 1/(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup>] +
+      <span style="color:#49b2b8;">FV</span>/(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup>
+    </div>
   </div>
-</div>
+</section>
 
 
 
-        </div>
-      </section>
 
       <!-- Cards 2 & 3: Results and Visualizer (side by side on desktop) -->
       <div class="grid-container">
@@ -188,22 +189,45 @@
   <label for="coupon-rate" class="input-label-inline">
     Coupon rate (0–10):
   </label>
-  <input type="number" id="coupon-rate" class="input-field-inline" min="0" max="10" step="0.1" value="8.6">
+  <div class="input-with-suffix-inline">
+    <input 
+      type="number" 
+      id="coupon-rate" 
+      class="input-field-inline"
+      min="0" max="10" step="0.1" value="8.6">
+    <span class="input-suffix-inline">%</span>
+  </div>
 </div>
 
 <div class="input-inline">
   <label for="ytm" class="input-label-inline">
     Yield-to-maturity (0–10):
   </label>
-  <input type="number" id="ytm" class="input-field-inline" min="0" max="10" step="0.1" value="6.5">
+  <div class="input-with-suffix-inline">
+    <input 
+      type="number" 
+      id="ytm" 
+      class="input-field-inline"
+      min="0" max="10" step="0.1" value="6.5">
+    <span class="input-suffix-inline">%</span>
+  </div>
 </div>
 
 <div class="input-inline">
   <label for="years" class="input-label-inline">
     Years-to-maturity (1–5):
   </label>
-  <input type="number" id="years" class="input-field-inline" min="1" max="5" step="0.5" value="5">
+  <div class="input-with-suffix-inline">
+    <input 
+      type="number" 
+      id="years" 
+      class="input-field-inline"
+      min="1" max="5" step="0.5" value="5">
+    <span class="input-suffix-inline" aria-hidden="true">&nbsp;</span>
+  </div>
 </div>
+
+
 </div>
 
 
@@ -220,5 +244,20 @@
 
   <!-- JavaScript Modules -->
   <script type="module" src="calculator.js"></script>
+  <script>
+  // Simple MathML support check
+  const supportsMathML = CSS.supports('math-style: normal');
+
+  if (!supportsMathML) {
+    // Hide MathML, show fallback
+    const mathml = document.getElementById('mathml-equation');
+    const fallback = document.getElementById('html-equation');
+    if (mathml && fallback) {
+      mathml.hidden = true;
+      fallback.hidden = false;
+    }
+  }
+</script>
+
 </body>
 </html>
