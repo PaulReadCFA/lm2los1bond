@@ -318,9 +318,11 @@ function setupKeyboardNavigation(canvas, cashFlows, totalData) {
   canvas._keydownListener = keydownListener;
   canvas.addEventListener('keydown', keydownListener);
   
-  // Focus handler to redraw focus indicator
+  // Focus handler to redraw focus indicator and show initial tooltip
   const focusListener = () => {
-    chartInstance.update('none');
+    isKeyboardMode = true;
+    showTooltipAtIndex(currentFocusIndex);
+    announceDataPoint(cashFlows[currentFocusIndex], totalData[currentFocusIndex]);
   };
   
   const blurListener = () => {
