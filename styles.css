@@ -51,9 +51,10 @@ body {
   background-color: var(--color-gray-50);
   color: var(--color-gray-800);
   line-height: 1.5;
-  padding: 1.5rem;
+  padding: 0 1.5rem 1.5rem;  /* ⬅️ no top padding */
   min-height: 100vh;
 }
+
 
 /* Skip Links for Accessibility */
 .skip-link {
@@ -838,3 +839,28 @@ math msub mtext {
 math mfrac { margin: 0 0.2em; }
 math mo { margin: 0 0.1em; }
 
+.card:first-of-type {
+  border-top-color: transparent;  /* hide faint top border line */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08); /* only downward shadow */
+}
+
+
+.denominator-r {
+  padding-top: 0.25em;   /* gentle push downward */
+}
+.chart-a11y-overlay .chart-point:focus-visible {
+  outline: 2px solid #3369FF;
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

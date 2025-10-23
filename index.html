@@ -17,7 +17,6 @@
     <!-- Skip Links for Accessibility -->
     <a href="#calculator" class="skip-link">Skip to calculator</a>
     <a href="#data-table" class="skip-link">Skip to data table</a>
-
     <main class="content">
       <!-- Card 1: Equation -->
 <section id="equation-card" class="card">
@@ -36,10 +35,13 @@
             <mtext mathcolor="#ea792d">coupon bond</mtext>
           </msub>
           <mo>=</mo>
-          <mfrac>
-            <mi mathcolor="#3369FF">PMT</mi>
-            <mi mathcolor="#7a46ff">r</mi>
-          </mfrac>
+<mfrac linethickness="1.2px">
+  <mi mathvariant="bold" mathcolor="#3369FF">PMT</mi>
+  <mrow class="denominator-r">
+    <mi mathcolor="#7a46ff">r</mi>
+  </mrow>
+</mfrac>
+
           <mo>×</mo>
           <mrow>
             <mo>[</mo>
@@ -56,7 +58,7 @@
           </mrow>
           <mo>+</mo>
           <mfrac>
-            <mi mathcolor="#32959a">FV</mi>
+            <mi mathcolor="#32959a" mathvariant="bold">FV</mi>
             <msup>
               <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi mathcolor="#7a46ff">r</mi><mo>)</mo></mrow>
               <mi>T</mi>

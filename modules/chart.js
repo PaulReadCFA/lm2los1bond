@@ -1,6 +1,6 @@
 /**
  * Chart Module
- * Chart rendering using Chart.js
+ * Chart rendering using Chart.js with keyboard accessibility
  */
 
 import { formatCurrency } from './utils.js';
@@ -14,6 +14,7 @@ const COLORS = {
 };
 
 let chartInstance = null;
+let currentFocusIndex = 0;
 
 /**
  * Create or update bond cash flow chart
@@ -27,6 +28,11 @@ export function renderChart(cashFlows, showLabels = true) {
     console.error('Chart canvas not found');
     return;
   }
+  
+  // Make canvas focusable and add keyboard navigation
+  canvas.setAttribute('tabindex', '0');
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', 'Bond cash flow bar chart. Use arrow keys to navigate between data points.');
   
   const ctx = canvas.getContext('2d');
   
@@ -45,6 +51,9 @@ export function renderChart(cashFlows, showLabels = true) {
   if (chartInstance) {
     chartInstance.destroy();
   }
+  
+  // Reset focus index
+  currentFocusIndex = 0;
   
   // Create new chart with custom label drawing
   chartInstance = new Chart(ctx, {
@@ -174,35 +183,165 @@ export function renderChart(cashFlows, showLabels = true) {
         ctx.restore();
       }
     },
-  {
-  id: 'outerBorders',
-  afterDatasetsDraw: (chart) => {
-    const ctx = chart.ctx;
-    ctx.save();
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
+    {
+      id: 'outerBorders',
+      afterDatasetsDraw: (chart) => {
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
 
-    // Loop through all datasets and bars
-    chart.data.datasets.forEach((dataset, datasetIndex) => {
-      const meta = chart.getDatasetMeta(datasetIndex);
-      meta.data.forEach((bar) => {
-        // Each bar is a rectangle, with these properties:
-        // bar.x (center X), bar.y (top Y), bar.base (bottom Y), bar.width, bar.height
-        const x = bar.x - bar.width / 2;
-        const y = Math.min(bar.y, bar.base);
-        const width = bar.width;
-        const height = Math.abs(bar.base - bar.y);
+        // Loop through all datasets and bars
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+          meta.data.forEach((bar) => {
+            // Each bar is a rectangle, with these properties:
+            // bar.x (center X), bar.y (top Y), bar.base (bottom Y), bar.width, bar.height
+            const x = bar.x - bar.width / 2;
+            const y = Math.min(bar.y, bar.base);
+            const width = bar.width;
+            const height = Math.abs(bar.base - bar.y);
 
-        // Draw a rectangle around the filled bar
+            // Draw a rectangle around the filled bar
+            ctx.strokeRect(x, y, width, height);
+          });
+        });
+
+        ctx.restore();
+      }
+    },
+    {
+      // Keyboard focus highlight plugin
+      id: 'keyboardFocus',
+      afterDatasetsDraw: (chart) => {
+        if (document.activeElement !== canvas) return;
+        
+        const ctx = chart.ctx;
+        const meta0 = chart.getDatasetMeta(0);
+        const meta1 = chart.getDatasetMeta(1);
+        
+        if (!meta0.data[currentFocusIndex] || !meta1.data[currentFocusIndex]) return;
+        
+        const bar0 = meta0.data[currentFocusIndex];
+        const bar1 = meta1.data[currentFocusIndex];
+        
+        // Find the actual top and bottom of the stacked bars
+        const allYValues = [bar0.y, bar0.base, bar1.y, bar1.base];
+        const topY = Math.min(...allYValues);
+        const bottomY = Math.max(...allYValues);
+        
+        // Draw focus indicator
+        ctx.save();
+        ctx.strokeStyle = COLORS.darkText;
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        
+        const x = bar1.x - bar1.width / 2 - 4;
+        const y = topY - 4;
+        const width = bar1.width + 8;
+        const height = bottomY - topY + 8;
+        
         ctx.strokeRect(x, y, width, height);
-      });
-    });
-
-    ctx.restore();
-  }
-}
-]
+        ctx.restore();
+      }
+    }
+  ]
   });
+  
+  // Add keyboard navigation
+  setupKeyboardNavigation(canvas, cashFlows, totalData);
+}
+
+/**
+ * Setup keyboard navigation for the chart
+ * @param {HTMLCanvasElement} canvas - The chart canvas
+ * @param {Array} cashFlows - Array of cash flow objects
+ * @param {Array} totalData - Array of total values
+ */
+function setupKeyboardNavigation(canvas, cashFlows, totalData) {
+  // Remove existing listeners to avoid duplicates
+  const oldListener = canvas._keydownListener;
+  if (oldListener) {
+    canvas.removeEventListener('keydown', oldListener);
+  }
+  
+  // Create new listener
+  const keydownListener = (e) => {
+    const maxIndex = cashFlows.length - 1;
+    let newIndex = currentFocusIndex;
+    
+    switch(e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        newIndex = Math.min(currentFocusIndex + 1, maxIndex);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        newIndex = Math.max(currentFocusIndex - 1, 0);
+        break;
+      case 'Home':
+        e.preventDefault();
+        newIndex = 0;
+        break;
+      case 'End':
+        e.preventDefault();
+        newIndex = maxIndex;
+        break;
+      default:
+        return;
+    }
+    
+    if (newIndex !== currentFocusIndex) {
+      currentFocusIndex = newIndex;
+      chartInstance.update('none'); // Update without animation
+      announceDataPoint(cashFlows[currentFocusIndex], totalData[currentFocusIndex]);
+    }
+  };
+  
+  // Store listener reference for cleanup
+  canvas._keydownListener = keydownListener;
+  canvas.addEventListener('keydown', keydownListener);
+  
+  // Focus handler to redraw focus indicator
+  const focusListener = () => {
+    chartInstance.update('none');
+  };
+  
+  const blurListener = () => {
+    chartInstance.update('none');
+  };
+  
+  canvas._focusListener = focusListener;
+  canvas._blurListener = blurListener;
+  canvas.addEventListener('focus', focusListener);
+  canvas.addEventListener('blur', blurListener);
+}
+
+/**
+ * Announce data point for screen readers
+ * @param {Object} cashFlow - Cash flow object
+ * @param {number} total - Total cash flow
+ */
+function announceDataPoint(cashFlow, total) {
+  // Create or update live region for screen reader announcements
+  let liveRegion = document.getElementById('chart-live-region');
+  if (!liveRegion) {
+    liveRegion = document.createElement('div');
+    liveRegion.id = 'chart-live-region';
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.className = 'sr-only';
+    document.body.appendChild(liveRegion);
+  }
+  
+  const announcement = `Period ${cashFlow.yearLabel} years. ` +
+    `Coupon payment: ${formatCurrency(cashFlow.couponPayment, true)}. ` +
+    `Principal repayment: ${formatCurrency(cashFlow.principalPayment, true)}. ` +
+    `Total: ${formatCurrency(total, true)}.`;
+  
+  liveRegion.textContent = announcement;
 }
 
 /**
