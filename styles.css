@@ -68,8 +68,7 @@ body {
   text-decoration: none;
   border-radius: 0.25rem;
   font-weight: 600;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+  }
 
 .skip-link:focus {
   top: 1rem;
@@ -863,4 +862,8 @@ math mo { margin: 0 0.1em; }
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+* {
+  box-shadow: none !important;
 }
