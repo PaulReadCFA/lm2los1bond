@@ -167,22 +167,38 @@ export function renderChart(cashFlows, showLabels = true) {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         
+        // Find the highest positive bar to align negative labels
+        const meta0 = chart.getDatasetMeta(0);
+        const meta1 = chart.getDatasetMeta(1);
+        
+        let maxPositiveY = chart.scales.y.top;
+        chart.data.labels.forEach((label, index) => {
+          const total = totalData[index];
+          if (total > 0 && meta0.data[index] && meta1.data[index]) {
+            const topY = Math.min(meta0.data[index].y, meta1.data[index].y);
+            maxPositiveY = Math.max(maxPositiveY, topY);
+          }
+        });
+        
         chart.data.labels.forEach((label, index) => {
           const total = totalData[index];
           if (Math.abs(total) < 0.01) return;
-          
-          // Find the top of the stacked bars
-          const meta0 = chart.getDatasetMeta(0);
-          const meta1 = chart.getDatasetMeta(1);
           
           if (!meta0.data[index] || !meta1.data[index]) return;
           
           const bar0 = meta0.data[index];
           const bar1 = meta1.data[index];
           
-          // Get the topmost point
           const x = bar1.x;
-          const y = Math.min(bar0.y, bar1.y) - 5; // 5px above the bar
+          let y;
+          
+          if (total < 0) {
+            // For negative bars, align with the positive labels
+            y = maxPositiveY - 5;
+          } else {
+            // For positive bars, place above the bar as before
+            y = Math.min(bar0.y, bar1.y) - 5;
+          }
           
           // Draw the label
           ctx.fillText(formatCurrency(total, true), x, y);
