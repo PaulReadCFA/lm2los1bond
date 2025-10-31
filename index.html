@@ -24,6 +24,10 @@
   <p class="equation-intro">
     Equation 6 shows the price of a coupon bond expressed as:
   </p>
+  <p id="equation-description" class="sr-only">
+  Equation showing the price of a coupon bond as the sum of the present value of all coupon payments
+  and the face value, discounted at the yield to maturity.
+</p>
 
   <div class="equation-container" aria-describedby="equation-description">
     <!-- MathML version -->
@@ -31,8 +35,8 @@
       <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
         <mrow>
           <msub>
-            <mi mathcolor="#ea792d">PV</mi>
-            <mtext mathcolor="#ea792d">coupon bond</mtext>
+            <mi mathcolor="#b95b1d">PV</mi>
+            <mtext mathcolor="#b95b1d">coupon bond</mtext>
           </msub>
           <mo>=</mo>
 <mfrac linethickness="1.2px">
@@ -70,7 +74,7 @@
 
     <!-- HTML fallback -->
     <div id="html-equation" hidden>
-      <span class="bold" style="color:#ea792d;">PV<sub>coupon bond</sub></span> =
+      <span class="bold" style="color:#B95B1D;">PV<sub>coupon bond</sub></span> =
       <span style="color:#3369FF;">PMT</span>/<span style="color:#7a46ff;">r</span>
       × [1 − 1/(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup>] +
       <span style="color:#49b2b8;">FV</span>/(1 + <span style="color:#7a46ff;">r</span>)<sup>T</sup>
@@ -97,7 +101,7 @@
 
         <!-- Card 3: Visualizer -->
         <div class="grid-item-right">
-          <section class="card" id="data-table">
+          <section class="card" id="data-table" tabindex="-1">
             <h4 class="card-title">Bond Cash Flows: Semi-annual Payment Frequency</h4>
             <div class="card-content">
               <!-- View toggle buttons -->
@@ -117,26 +121,32 @@
                   </span>
                 </div>
                 
-                <div class="button-group" role="group" aria-label="View mode">
-                  <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">
-                    Show Chart
-                  </button>
-                  <button id="table-view-btn" class="toggle-btn" aria-pressed="false">
-                    Show Table
-                  </button>
-                </div>
-              </div>
+                 <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
+    <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">
+      Show Chart
+    </button>
+    <button id="table-view-btn" class="toggle-btn" aria-pressed="false">
+      Show Table
+    </button>
+  </div>
+</div>
 
               <!-- Screen reader announcement for view changes -->
               <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
               <!-- Hidden chart description -->
-              <div class="sr-only" id="bond-chart-desc">
-                <h5 id="bond-chart-title">Bond cash flows</h5>
-                <p>Stacked bars display coupon payments and the final principal repayment over time. 
-                   The initial purchase appears as a negative bar at period 0. 
-                   Different borders help distinguish between payment types.</p>
-              </div>
+<div class="sr-only" id="bond-chart-desc">
+  <h5 id="bond-chart-title">Bond cash flows over time</h5>
+  <p>
+    This chart displays the complete cash flow timeline for a bond investment. 
+    At period 0, the initial purchase price is shown as a negative cash flow (money paid out). 
+    Then, at each semi-annual period, the bond pays a coupon payment shown in blue. 
+    At the final maturity date, both the last coupon payment and the principal repayment 
+    (shown in teal) are received. The stacked bars show how coupon and principal payments 
+    combine at each period. Use the arrow keys to navigate between data points and hear 
+    the specific values for each period.
+  </p>
+</div>
 
               <!-- Chart container -->
               <div id="chart-container" class="chart-wrapper" 
@@ -162,7 +172,7 @@
       </div>
 
       <!-- Card 4: Calculator -->
-      <section class="card" id="calculator">
+      <section class="card" id="calculator" tabindex="-1">
         <h4 class="card-title">Bond Cash Flow Calculator</h4>
         <div class="card-content">
           <!-- Static info row -->

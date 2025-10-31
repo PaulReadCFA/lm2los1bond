@@ -10,7 +10,7 @@
   --color-coupon: #3369FF; /* WCAG AA verified 4.55:1 */
   --color-yield: #7a46ff;
   --color-mint: #49b2b8;
-  --color-orange: #ea792d;
+  --color-orange: #b95b1d;
   --color-purchase: #f2af81;
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
@@ -234,13 +234,15 @@ body {
 }
 
 .result-title {
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .result-title.price {
-  color: var(--color-orange);
+  font-size: 1.125rem; /* 18px */
+     font-weight: 600;     /* bold */
+  color: #B0571C;
 }
 
 .result-title.analysis {
@@ -251,7 +253,7 @@ body {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 1.875rem;
   font-weight: 400;
-  color: var(--color-orange);
+  color: #E86B17;
 }
 
 .result-value-small {
@@ -262,7 +264,7 @@ body {
 }
 
 .analysis-content {
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--color-purple-700);
   display: flex;
   flex-direction: column;
@@ -741,7 +743,7 @@ body {
 .equation-subscript {
   font-size: 0.7em;           /* smaller but readable */
   vertical-align: -0.3em;     /* lowers neatly under PV */
-  color: #ea792d;             /* match PV color */
+  color: #B95B1D;             /* match PV color */
   font-weight: 500;
   letter-spacing: 0.01em;
 }
@@ -820,8 +822,8 @@ body {
 
 math {
   font-family: 'Times New Roman', Georgia, serif;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 1.125rem;
+  font-weight: 600;
   color: #111;
   margin: 0.5rem 0;
 }
@@ -831,7 +833,7 @@ math {
 /* Subscripts slightly smaller */
 math msub mtext {
   font-size: 0.75em;
-  color: #ea792d;
+  color: #b95b1d;
 }
 
 /* Fractions and operators spacing */

@@ -42,6 +42,9 @@ function init() {
   // Set up view toggle listeners
   setupViewToggle();
   
+  // Set up skip link handlers
+  setupSkipLinks();  // ← Add this line
+  
   // Set up window resize listener for chart labels
   setupResizeListener();
   
@@ -55,6 +58,34 @@ function init() {
   runSelfTests();
   
   console.log('Bond Calculator ready');
+}
+
+/**
+ * Set up skip link handlers for accessibility
+ */
+function setupSkipLinks() {
+  const skipToTable = document.querySelector('a[href="#data-table"]');
+  
+  if (skipToTable) {
+    listen(skipToTable, 'click', (e) => {
+      // Prevent default to handle it ourselves
+      e.preventDefault();
+      
+      // Switch to table view if not already there
+      if (state.viewMode !== 'table') {
+        switchView('table');
+      } else {
+        // If already in table view, just focus the table
+        focusElement($('#cash-flow-table'), 100);
+      }
+      
+      // Scroll the section into view
+      const section = $('#data-table');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
 }
 
 // =============================================================================
